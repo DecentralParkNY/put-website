@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Altar | Concept</title>
+<style>
+:root { --bg: #121212; --accent: #ccff00; --text: #ffffff; --muted: #333; }
+body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
+.container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+header { border-bottom: 8px solid var(--accent); padding-bottom: 20px; margin-bottom: 60px; }
+ h1 { font-size: 3rem; line-height: 0.9; text-transform: uppercase; margin: 0; }
+.pitch { font-size: 1.2rem; color: var(--accent); margin-top: 10px; }
+
+.altar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 100px; }
+.fragment { background: var(--muted); border: 2px solid var(--text); padding: 15px; cursor: grab; user-select: none; transition: transform 0.1s; position: relative; }
+.fragment:active { cursor: grabbing; transform: scale(1.05); z-index: 10; }
+.fragment small { display: block; color: var(--accent); margin-bottom: 5px; font-size: 0.7rem; }
+
+.void-zone { height: 200px; border: 4px dashed var(--accent); display: flex; align-items: center; justify-content: center; text-align: center; font-weight: bold; text-transform: uppercase; transition: background 0.3s; position: relative; }
+.void-zone.hover { background: var(--accent); color: var(--bg); }
+.void-zone::after { content: 'DROP TO ERASE'; font-size: 0.8rem; opacity: 0.6; }
+
+.status { position: fixed; bottom: 20px; right: 20px; font-size: 0.8rem; color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Digital Altar</h1>
+    <div class="pitch">Curate the digital footprint he actually wants to leave.</div>
+  </header>
+
+  <div class="altar-grid" id="grid">
+    <div class="fragment" draggable="true"><small>LOG_01</small>"I remember the rain in Berlin."</div>
+    <div class="fragment" draggable="true"><small>IMG_04</small>[Blurred Portrait]</div>
+    <div class="fragment" draggable="true"><small>TXT_09</small>"The architecture of silence."</div>
+    <div class="fragment" draggable="true"><small>LOG_02</small>"Coffee at 4AM, thinking of you."</div>
+    <div class="fragment" draggable="true"><small>IMG_12</small>[Empty Gallery]</div>
+    <div class="fragment" draggable="true"><small>TXT_03</small>"A ghost in the machine."</div>
+  </div>
+
+  <div class="void-zone" id="void"></div>
+</div>
+<div class="status" id="status">SYSTEM: READY</div>
+
+<script>
+  const fragments = document.querySelectorAll('.fragment');
+  const voidZone = document.getElementById('void');
+  const status = document.getElementById('status');
+  let draggedItem = null;
+
+  fragments.forEach(f => {
+    f.addEventListener('dragstart', () => {
+      draggedItem = f;
+      f.style.opacity = '0.5';
+    });
+    f.addEventListener('dragend', () => {
+      f.style.opacity = '1';
+    });
+  });
+
+  voidZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    voidZone.classList.add('hover');
+  });
+
+  voidZone.addEventListener('dragleave', () => {
+    voidZone.classList.remove('hover');
+  });
+
+  voidZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    voidZone.classList.remove('hover');
+    if (draggedItem) {
+      draggedItem.remove();
+      status.innerText = 'SYSTEM: MEMORY PURGED';
+      setTimeout(() => status.innerText = 'SYSTEM: READY', 2000);
+    }
+  });
+</script>
+</body>
+</html>
